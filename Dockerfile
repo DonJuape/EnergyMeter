@@ -8,6 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY energymeter.py ./
 
 RUN touch .env
-RUN echo $"is_docker=true"
+RUN echo $"is_docker=true" > .env
 
 CMD ["python", "energymeter.py"]
