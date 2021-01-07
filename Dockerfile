@@ -5,6 +5,7 @@ WORKDIR /usr/src/energymeter
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN apt-get install ca-certificates curl gcc make python-dev
 RUN pip3 install RPi.GPIO
 
 COPY energymeter.py ./
