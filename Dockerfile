@@ -10,4 +10,4 @@ COPY energymeter.py ./
 RUN touch .env
 RUN echo $"is_docker=true" > .env
 
-CMD ["python", "energymeter.py"]
+CMD ["sudo", "python", "energymeter.py"]
