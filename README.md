@@ -33,5 +33,5 @@ sudo apt install screen # Debian based Linux distros
 5. Create a .env file (or rename example.env to .env) and fill in the correct values for your database
 6. Run [startenergy.sh](startenergy.sh) as sudo to start script
 ```sh
-sudo bash ./startenergy.s
+sudo bash ./startenergy.sh
 ```
