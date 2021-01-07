@@ -22,7 +22,13 @@ PULSE_FREQ_METER = 1000 # Pulse "frequency" in imp/kWh for the energy meter you 
 
 S0_pulse = Button("BOARD38", False) # Meter connected to RasPi GPIO pin38 = GPIO20. Connected with an external PD and therefore internal PU/PD = False
 
-r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
+global r
+if getenv("is_docker") == "true":
+    print('docker')
+    r = redis.Redis(host = "redis")
+else:
+    r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
+
 nice(0)
 
 def new_day(): # Logic for creating an object for the start of a day
