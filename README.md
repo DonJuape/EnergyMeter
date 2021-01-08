@@ -6,7 +6,7 @@ In my case the Energy Meter is connected to my heat pump system. I am interested
 The energy meter I used is an ABB C11 ([ABB C11 User Manual](https://library.e.abb.com/public/f1db7577ce344f97ac2c5621cc8fd74d/2CMC486001M0201_B_en_C11_User_Manual.pdf?x-sign=pVu7AdCVZvHS0SL9Slxg1xL5eX+0l8oJIaBao391Itg4Frj+EhCpW/bs/t/biX5h)). This meter has an pulse output and the pulse frequency is a measure for the energy consumption. Basically the S0 pulse output of the energy meter works as follows. For every Wh consumed, the energy meter closes the switch between pin 20 and 21 for a duration of 100 ms. For installing the ABB C11 energy meter (or any other energy meter) to your 230 V electrical installation, please follow the installation instructions included with the meter.\
 Now we need to count the pulses and we will do that with a Raspberry Pi, I used a Raspberry Pi 3B+. In below schematic it is shown how to connect the energy meter to the Pi. Note that there are two resistors in the schematic and these are needed for the following reasons. This pulls the input pin on the Raspberry Pi to ground when there is no pulse and it reduces the voltage on the input pin to below 3.3 V when there is a pulse. The latter is needed because the ABB C11 energy meter expects a voltage of min. 5 V and the voltage on the input pin of the Pi should not be higher than 3.3 V. 
 
-![](schematic.svg)
+![Schematic](docs/schematic.svg)
 
 ## Script and Database
 For the script I used Python 3 and I used REDIS as a database to store the energy consumption data for later analysis. The reason I used REDIS is because it is fast and reliable and I do not have to worry about data loss.\
