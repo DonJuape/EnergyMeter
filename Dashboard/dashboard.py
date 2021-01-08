@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 
 load_dotenv("../.env")
 
+print(getenv("is_docker"))
+
 global r
 if getenv("is_docker") == "true":
     r = redis.Redis(host = "redis", port = 6379)
