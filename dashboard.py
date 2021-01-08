@@ -40,8 +40,6 @@ def generate_csv_daily() -> str:
         csv += ";"
         csv += str(key["energy"])
         csv += ";"
-        csv += str(key["power"])
-        csv += ";"
         csv += str(key["restart"])
         csv += "\n"
     return csv
