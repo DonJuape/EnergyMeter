@@ -4,5 +4,9 @@ services:
     ports:
       - "6379:6379"
   script:
-    build: .
+    build: ./EnergyMeter
     privileged: true
+  dashboard:
+    build: ./Dashboard
+    ports:
+      - "80:80"
