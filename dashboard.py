@@ -21,11 +21,11 @@ def generate_csv_pulse() -> str:
         csv += ";"
         csv += datetime.fromisoformat(key["datetime"]).time().isoformat()
         csv += ";"
-        csv += key["energy"]
+        csv += str(key["energy"])
         csv += ";"
-        csv += key["power"]
+        csv += str(key["power"])
         csv += ";"
-        csv += key["restart"]
+        csv += str(key["restart"])
         csv += "\n"
     return csv
 
@@ -38,11 +38,11 @@ def generate_csv_daily() -> str:
     for key in parsed:
         csv += date.fromisoformat(key["date"]).isoformat()
         csv += ";"
-        csv += key["energy"]
+        csv += str(key["energy"])
         csv += ";"
-        csv += key["power"]
+        csv += str(key["power"])
         csv += ";"
-        csv += key["restart"]
+        csv += str(key["restart"])
         csv += "\n"
     return csv
 
