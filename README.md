@@ -10,7 +10,7 @@ Now we need to count the pulses and we will do that with a Raspberry Pi, I used 
 
 ## Script and Database
 For the script I used Python 3 and I used REDIS as a database to store the energy consumption data for later analysis. The reason I used REDIS is because it is fast and reliable and I do not have to worry about data loss.\
-It is important that we do not miss any pulses and therefore I used the *Button* class from the Python *gpiozero* module. With the *Button* class function *when_pressed* we will "monitor" the GPIO 20 input pin. This function will return TRUE when the meter switch between pin 20 and 21 is closed (i.e "a pulse").\
+It is important that we do not miss any pulses and therefore I used the `Button` class from the Python `gpiozero` module. With the `Button` class function `when_pressed` we will "monitor" the GPIO 20 input pin for a rising edge. This function will return TRUE when the meter switch between pin 20 and 21 is closed (i.e "a pulse").\
 The rest of the script deals with periodically storing the date, time and associated energy consumption (and power) in the database (stored as a JSON string to facilitate easy data analysis). The script also checks if a new day has started and stores the date and energy consumption for that day in a seperate database key. Finally, we also check if the script was restarted (e.g. because of a power loss or maintenance) and if this was the case, that database entry is flagged. This way we can spot possible incomplete energy data in our later analysis.
 ## Software Setup
 1. Install python3 and pip3
