@@ -29,7 +29,7 @@ if getenv("is_docker") == "true":
 else:
     r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
 
-nice(0)
+nice(0) # Low niceness to give script high priority
 
 def new_day(): # Logic for creating an object for the start of a day
     global currentday # Make currentday available within function
