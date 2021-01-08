@@ -11,7 +11,7 @@ load_dotenv()
 r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
 
 def generate_csv_pulse() -> str:
-    keys = r.llen("HP_consumption")
+    keys = r.lrange("HP_consumption", 0, -1)
     parsed = []
     for key in keys:
         parsed.append(json.loads(key))
@@ -30,7 +30,7 @@ def generate_csv_pulse() -> str:
     return csv
 
 def generate_csv_daily() -> str:
-    keys = r.llen("HP_consumption_daily")
+    keys = r.lrange("HP_consumption_daily", 0, -1)
     parsed = []
     for key in keys:
         parsed.append(json.loads(key))
