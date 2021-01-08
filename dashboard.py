@@ -4,6 +4,9 @@ from socketserver import TCPServer
 import redis
 from os import getenv
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
 
 r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
 
