@@ -17,9 +17,9 @@ def generate_csv_pulse() -> str:
         parsed.append(json.loads(key))
     csv: str = ""
     for key in parsed:
-        csv += datetime(key["datetime"]).date().isoformat()
+        csv += datetime.fromisoformat(key["datetime"]).date().isoformat()
         csv += ";"
-        csv += datetime(key["datetime"]).time().isoformat()
+        csv += datetime.fromisoformat(key["datetime"]).time().isoformat()
         csv += ";"
         csv += key["energy"]
         csv += ";"
@@ -36,7 +36,7 @@ def generate_csv_daily() -> str:
         parsed.append(json.loads(key))
     csv: str = ""
     for key in parsed:
-        csv += date(key["date"]).isoformat()
+        csv += date.fromisoformat(key["date"]).isoformat()
         csv += ";"
         csv += key["energy"]
         csv += ";"
