@@ -6,9 +6,13 @@ from os import getenv
 import json
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv("../.env")
 
-r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
+global r
+if getenv("is_docker") == "true":
+    r = redis.Redis(host = "redis", port = 6379)
+else:
+    r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
 
 def generate_csv_pulse() -> str:
     keys = r.lrange("HP_consumption", 0, -1)

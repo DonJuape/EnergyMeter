@@ -9,7 +9,7 @@ import redis
 import json
 from dotenv import load_dotenv
 
-load_dotenv() # load .env file
+load_dotenv("../.env") # load .env file
 
 pulsecounter = 0 # Assign start value
 start = monotonic() # Start value is the current time from a monotonic clock (i.e. a clock that cannot go backwards)
