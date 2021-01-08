@@ -20,7 +20,11 @@ restart = True
 INTERVAL_MAX = 120 # Energy calculation interval length in seconds
 PULSE_FREQ_METER = 1000 # Pulse "frequency" in imp/kWh for the energy meter you are using (ABB C11 in this case)
 
+print('Debug 1')
+
 S0_pulse = Button("BOARD38", False) # Meter connected to RasPi GPIO pin38 = GPIO20. Connected with an external PD and therefore internal PU/PD = False
+
+print('Debug 2')
 
 global r
 if getenv("is_docker") == "true":
@@ -28,8 +32,7 @@ if getenv("is_docker") == "true":
     r = redis.Redis(host = "redis")
 else:
     r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
-
-nice(0) # Low niceness to give script high priority
+    nice(0) # Low niceness to give script high priority (not required on docker)
 
 def new_day(): # Logic for creating an object for the start of a day
     global currentday # Make currentday available within function
