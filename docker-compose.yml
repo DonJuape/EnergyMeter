@@ -3,9 +3,9 @@ services:
     image: redis:alpine
     ports:
       - "6379:6379"
-  #script:
-   # build: ./EnergyMeter
-    #privileged: true
+  script:
+    build: ./EnergyMeter
+    privileged: true
   dashboard:
     build: ./Dashboard
     ports:
