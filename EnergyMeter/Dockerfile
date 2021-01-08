@@ -11,7 +11,6 @@ RUN pip3 install RPi.GPIO
 
 COPY energymeter.py ./
 
-RUN touch .env
-RUN echo $"is_docker=true" > .env
+ENV is_docker=true
 
 CMD ["python", "energymeter.py"]

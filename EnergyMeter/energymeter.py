@@ -9,8 +9,6 @@ import redis
 import json
 from dotenv import load_dotenv
 
-load_dotenv("../.env") # load .env file
-
 pulsecounter = 0 # Assign start value
 start = monotonic() # Start value is the current time from a monotonic clock (i.e. a clock that cannot go backwards)
 interval = 0 # Assign start value
@@ -26,6 +24,7 @@ global r
 if getenv("is_docker") == "true":
     r = redis.Redis(host = "redis", port = 6379)
 else:
+    load_dotenv("../.env") # load .env file
     r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
     nice(0) # Low niceness to give script high priority (not required on docker)
 

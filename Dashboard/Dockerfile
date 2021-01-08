@@ -7,7 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY dashboard.py ./
 
-RUN touch .env
-RUN echo $"is_docker=true" > .env
+ENV is_docker=true
 
 CMD ["python", "dashboard.py"]
