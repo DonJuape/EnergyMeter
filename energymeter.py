@@ -20,15 +20,10 @@ restart = True
 INTERVAL_MAX = 120 # Energy calculation interval length in seconds
 PULSE_FREQ_METER = 1000 # Pulse "frequency" in imp/kWh for the energy meter you are using (ABB C11 in this case)
 
-print('Debug 1')
-
 S0_pulse = Button("BOARD38", False) # Meter connected to RasPi GPIO pin38 = GPIO20. Connected with an external PD and therefore internal PU/PD = False
-
-print('Debug 2')
 
 global r
 if getenv("is_docker") == "true":
-    print('docker')
     r = redis.Redis(host = "redis", port = 6379)
 else:
     r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
