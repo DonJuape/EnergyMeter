@@ -3,3 +3,4 @@ services:
     image: redis:alpine
   script:
     build: .
+    command: start --privileged
