@@ -47,11 +47,11 @@ def generate_csv_daily() -> str:
         csv += "\n"
     return csv
 
-def send_csv(self: http.server.SimpleHTTPRequestHandler, csv: str):
+def send_csv(self: http.server.SimpleHTTPRequestHandler, csv: str, filename: str):
     self.send_response(200)
 
     self.send_header("Content-Type", "text/csv")
-    self.send_header("Content-Disposition", "inline; filename=\"data.csv\"")
+    self.send_header("Content-Disposition", "inline; filename=\"" + filename + ".csv\"")
     self.end_headers()
 
     self.wfile.write(bytes(csv, "utf8"))
@@ -59,9 +59,9 @@ def send_csv(self: http.server.SimpleHTTPRequestHandler, csv: str):
 class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/pulse':
-            send_csv(self, generate_csv_pulse())
+            send_csv(self, generate_csv_pulse(), datetime.now().isoformat() + "_pulse")
         else:
-            send_csv(self, generate_csv_daily())
+            send_csv(self, generate_csv_daily(), datetime.now().isoformat() + "_daily")
         
         return
 
