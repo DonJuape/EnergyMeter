@@ -23,8 +23,8 @@ S0_pulse = Button("BOARD38", False) # Meter connected to RasPi GPIO pin38 = GPIO
 global r
 if getenv("is_docker") == "true":
     r = redis.Redis(host = "redis", port = 6379)
-else:
-    load_dotenv("../.env") # load .env file
+else: # If Docker is not used
+    load_dotenv("../.env") # Load .env file
     r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
     nice(0) # Low niceness to give script high priority (not required on docker)
 
@@ -71,18 +71,17 @@ def count_pulse():
         # Reset pulsecounter and interval
         pulsecounter = 0
         interval = 0
-        
-        if restart == True: # If script was (re)started
-            new_day() # Create an entry in HP_consumption_daily with date of restart
-            restart = False # Reset restart flag
-
+       
         if date.today().isoformat() != currentday: # If this pulse is on a different day then the previous
             new_day() # Run new day logic
-
+                
         lastentry = r.rpop("HP_consumption_daily") # Get stored json object (as string) and remove it from db
-        parsedlastentry = json.loads(lastentry) # Convert json string to python dict
-        parsedlastentry["energy"] += energy # Add energy to value of dict key "energy" 
-        stringifiedentry = json.dumps(parsedlastentry) # Convert python dict to json string
+        parsedlastentry = json.loads(lastentry) # Convert json string to Python dict
+        parsedlastentry["energy"] += energy # Add energy to value of "energy" 
+        if restart == True: # Check if script was restarted
+            parsedlastentry["restart"] = True # Set restart flag in Python dict
+            restart = False # Reset restart flag
+        stringifiedentry = json.dumps(parsedlastentry) # Convert Python dict to json string
         r.rpush("HP_consumption_daily", stringifiedentry) # Add string json object to the database
 
 print("Started counting!")
