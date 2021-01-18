@@ -11,6 +11,9 @@ services:
     build: ./EnergyMeter
     privileged: true
     restart: unless-stopped
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
     
   dashboard:
     build: ./Dashboard
