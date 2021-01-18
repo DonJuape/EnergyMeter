@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from gpiozero import Button # Import the Button class from the GPIO Zero library to wait for meter's S0 pulse rising edge
+from gpiozero import Button # Import the Button class from the GPIO Zero library to use to detect the S0 pulse rising edge
 from signal import pause
 from time import monotonic
 from datetime import datetime, date
@@ -33,13 +33,13 @@ def new_day(): # Logic for creating an object for the start of a day
 
     currentday = date.today().isoformat() # Update currentday
 
-    emptyday = { # Init empty start of the day object
+    emptyday = { # Init empty start of the day dict
         "date": currentday,
         "energy": 0,
         "restart": restart
     }
 
-    r.rpush("HP_consumption_daily", json.dumps(emptyday)) # Stringify object using json.dumps and push to database
+    r.rpush("HP_consumption_daily", json.dumps(emptyday)) # Stringify dict object with json.dumps and push to database
 
 def count_pulse():
     global pulsecounter
@@ -59,30 +59,31 @@ def count_pulse():
         energy = int((1000 / PULSE_FREQ_METER) * pulsecounter) # Energy consumed in the interval in Wh
         power = 3.6 * energy / interval # Average power in the interval in kW
 
-        datapoint = { # Create a datapoint for the current pulse
+        datapoint = { # Create a datapoint dict with the values for the elements for the pulses recorded in the current interval
             "datetime": datetime.now().replace(microsecond=0).isoformat(),
             "energy": energy,
             "power": round(power, 2),
             "restart": restart
         }
 
-        r.rpush("HP_consumption", json.dumps(datapoint)) # Push current consumption (date/time, energy, power, restart flag) to database
+        # Stringify datapoint dict (date/time, energy, power, restart flag) and push to database
+        r.rpush("HP_consumption", json.dumps(datapoint)) 
 
         # Reset pulsecounter and interval
         pulsecounter = 0
         interval = 0
        
         if date.today().isoformat() != currentday: # If this pulse is on a different day then the previous
-            new_day() # Run new day logic
+            new_day() # Run new day function
                 
         lastentry = r.rpop("HP_consumption_daily") # Get stored json object (as string) and remove it from db
-        parsedlastentry = json.loads(lastentry) # Convert json string to Python dict
-        parsedlastentry["energy"] += energy # Add energy to value of "energy" 
+        lastentrydict = json.loads(lastentry) # Convert json string to dict
+        lastentrydict["energy"] += energy # Add interval energy current energy value of dict element "energy" 
         if restart == True: # Check if script was restarted
-            parsedlastentry["restart"] = True # Set restart flag in Python dict
+            lastentrydict["restart"] = True # Set restart flag in dict
             restart = False # Reset restart flag
-        stringifiedentry = json.dumps(parsedlastentry) # Convert Python dict to json string
-        r.rpush("HP_consumption_daily", stringifiedentry) # Add string json object to the database
+        lastentrystring = json.dumps(lastentrydict) # Stringify dict to json string
+        r.rpush("HP_consumption_daily", lastentrystring) # Push json string to database
 
 print("Started counting!")
 
