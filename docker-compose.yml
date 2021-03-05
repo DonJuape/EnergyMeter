@@ -14,9 +14,13 @@ services:
     volumes:
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
+    depends_on:
+      - redis
     
   dashboard:
     build: ./Dashboard
     ports:
       - "80:80"
     restart: unless-stopped
+    depends_on:
+      - redis
