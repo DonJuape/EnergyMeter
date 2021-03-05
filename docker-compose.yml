@@ -20,7 +20,7 @@ services:
   dashboard:
     build: ./Dashboard
     ports:
-      - "80:80"
+      - "81:80"
     restart: unless-stopped
     depends_on:
       - redis
