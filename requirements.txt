@@ -1,3 +1,0 @@
-gpiozero==1.5.1
-redis==3.5.3
-python-dotenv==0.15.0
