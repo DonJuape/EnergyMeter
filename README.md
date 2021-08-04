@@ -9,21 +9,26 @@ Now we need to count the pulses and we will do that with a Raspberry Pi, I used 
 ![Schematic](docs/schematic.svg)
 
 ## EnergyMeter Script and Database
-For the script I used Python 3 and I used REDIS as a database to store the energy consumption data for later analysis. The reason I used REDIS is because it is fast and reliable. I also do not have to worry about data loss because it has an "autosave" function.\
+For the script I used Python 3 and I used MongoDB as a database to store the energy consumption data for later analysis. The reason I used MongoDB is because this kind of database is the standard for these kind of applications and it supports JSON. REDIS which I previously used is, although fast and reliable, less suitable and does not support JSON.\
 It is important that we do not miss any pulses and therefore I used the `Button` class from the Python `gpiozero` module. With the `Button` class function `when_pressed` we will "monitor" the GPIO 20 input pin for a rising edge. This function will return TRUE when the meter switch between pin 20 and 21 is closed (i.e "a pulse").\
 The rest of the script deals with periodically storing the date, time and associated energy consumption (and power) in the database (stored as a JSON string to facilitate easy data analysis). The script also checks if a new day has started and stores the date and energy consumption for that day in a seperate database key. Finally, we also check if the script was restarted (e.g. because of a power loss or maintenance) and if this was the case, that database entry is flagged. This way we can spot possible incomplete energy data in our later analysis.
 ## Dashboard Script
 The dashboard script starts a webserver that can be used to pull the data from the database and store it as a .csv file that you can use for further analysis (e.g. in Excel). In your browser you type the IP address of your Raspberry Pi and the daily consumption data will download. If you want the consumption data and power of the short measuring intervals you type: xxx.xxx.xxx.xxx/pulse.
+## Software Setup with Docker (recommended)
+1. Install docker and docker-compose
+2. Start the docker-compose stack
+```sh
+# Use -d to run the stack as deamon
+# Append --build to the command if you changed files or pulled a new version
+sudo docker-compose up -d
+```
 ## Software Setup without Docker
 1. Install python3 and pip3
-2. Install python dependecies by running 
+2. Install python dependecies for the Dashboard and EnergyMeter script by running 
 ```sh
-pip3 install -r requirements.txt
+pip3 install -r Dashboard/requirements.txt && pip3 install -r EnergyMeter/requirements.txt
 ```
-3. Install redis-server
-```sh
-sudo apt install redis-server # Debian based Linux distros
-```
+3. Install MongoDB
 4. Install screen
 ```sh
 sudo apt install screen # Debian based Linux distros
@@ -32,12 +37,4 @@ sudo apt install screen # Debian based Linux distros
 6. Run [startenergy.sh](startenergy.sh) as sudo to start script
 ```sh
 sudo bash ./startenergy.sh
-```
-## Software Setup with Docker
-1. Install docker and docker-compose
-2. Start the docker-compose stack
-```sh
-# Use -d to run the stack as deamon
-# Append --build to the command if you changed files or pulled a new version
-sudo docker-compose up -d
 ```

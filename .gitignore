@@ -1,13 +1,9 @@
-convert/
-
 .env
+docker-compose.yml
 
 data/
+mongodata/
 
-correctDB.py
+_/
 
-PulseDataChecker.py
-
-UTCenzo.py
-
-scripts/removeByIndex
+Redis2Mongo.py

@@ -1,0 +1,39 @@
+services:
+  mongodb:
+    image: webhippie/mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - "./mongodata/data:/var/lib/mongodb"
+      - "./mongodata/backup:/var/lib/backup"
+    environment:
+      MONGODB_AUTH: "true"
+      MONGODB_ROOT_USERNAME: "<username>"
+      MONGODB_ROOT_PASSWORD: "<password>"
+    restart: unless-stopped
+
+  energymeter:
+    build: ./EnergyMeter
+    privileged: true
+    restart: unless-stopped
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    environment:
+      is_docker: "true"
+      MONGODB_ROOT_USERNAME: '<mongodb_username>'
+      MONGODB_ROOT_PASSWORD: '<mongodb_password>'
+    depends_on:
+      - mongodb
+    
+  dashboard:
+    build: ./Dashboard
+    ports:
+      - "81:80"
+    environment:
+      is_docker: "true"
+      MONGODB_ROOT_USERNAME: '<mongodb_username>'
+      MONGODB_ROOT_PASSWORD: '<mongodb_password>'
+    restart: unless-stopped
+    depends_on:
+      - mongodb

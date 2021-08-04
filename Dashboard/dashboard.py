@@ -1,51 +1,53 @@
-from datetime import date, datetime
+#!/usr/bin/python3
+
+from datetime import datetime
 import http.server
 from socketserver import TCPServer
-import redis
+from pymongo import MongoClient
 from os import getenv
-import json
 from dotenv import load_dotenv
 
-global r
+global mongo
+global db
 if getenv("is_docker") == "true":
-    r = redis.Redis(host = "redis", port = 6379)
+    mongo = MongoClient(host="mongodb", username=getenv("MONGODB_ROOT_USERNAME"),
+                        password=getenv("MONGODB_ROOT_PASSWORD"))
+    db = mongo["energymeter"]
 else:
     load_dotenv("../.env")
-    r = redis.Redis(db = getenv("redis_db_index"), password = getenv("redis_key"))
+    mongo = MongoClient(host=getenv("MONGODB_HOST"), port=getenv("MONGODB_PORT", 27017),
+                        username=getenv("MONGODB_ROOT_USERNAME"), password=getenv("MONGODB_ROOT_PASSWORD"))
+    db = mongo[getenv("MONGODB_DATABASE_NAME", "energymeter")]
 
-def generate_csv_pulse() -> str:
-    keys = r.lrange("HP_consumption", 0, -1)
-    parsed = []
+
+def generate_csv(key: str) -> str:
+    collection = db[key]
+    keys = collection.find()
+
+    csv = ""
     for key in keys:
-        parsed.append(json.loads(key))
-    csv: str = ""
-    for key in parsed:
-        csv += datetime.fromisoformat(key["datetime"]).date().isoformat()
-        csv += ";"
-        csv += datetime.fromisoformat(key["datetime"]).time().isoformat()
-        csv += ";"
-        csv += str(key["energy"])
-        csv += ";"
-        csv += str(key["power"])
-        csv += ";"
+        d = datetime.fromisoformat(key["_id"])
+
+        if "T" in key["_id"]:  # key is a pulse (date+time)
+            csv += d.date().isoformat()
+            csv += ";"
+            csv += d.time().isoformat()
+            csv += ";"
+            csv += str(key["energy"])
+            csv += ";"
+            csv += str(key["power"])
+            csv += ";"
+        else:  # key is a day overview (date)
+            csv += d.isoformat()
+            csv += ";"
+            csv += str(key["energy"])
+            csv += ";"
+
         csv += str(key["restart"])
         csv += "\n"
+
     return csv
 
-def generate_csv_daily() -> str:
-    keys = r.lrange("HP_consumption_daily", 0, -1)
-    parsed = []
-    for key in keys:
-        parsed.append(json.loads(key))
-    csv: str = ""
-    for key in parsed:
-        csv += date.fromisoformat(key["date"]).isoformat()
-        csv += ";"
-        csv += str(key["energy"])
-        csv += ";"
-        csv += str(key["restart"])
-        csv += "\n"
-    return csv
 
 def send_csv(self: http.server.SimpleHTTPRequestHandler, csv: str, filename: str):
     self.send_response(200)
@@ -56,14 +58,15 @@ def send_csv(self: http.server.SimpleHTTPRequestHandler, csv: str, filename: str
 
     self.wfile.write(bytes(csv, "utf8"))
 
+
 class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/pulse':
-            send_csv(self, generate_csv_pulse(), datetime.now().isoformat() + "_pulse")
+            send_csv(self, generate_csv("HP_consumption"), datetime.now().isoformat() + "_pulse")
         else:
-            send_csv(self, generate_csv_daily(), datetime.now().isoformat() + "_daily")
-        
+            send_csv(self, generate_csv("HP_consumption_daily"), datetime.now().isoformat() + "_daily")
         return
+
 
 with TCPServer(("", 80), HttpRequestHandler) as httpd:
     print("Server is running at port 80")
