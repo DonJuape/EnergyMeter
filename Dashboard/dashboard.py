@@ -38,7 +38,7 @@ def generate_csv(key: str) -> str:
             csv += str(key["power"])
             csv += ";"
         else:  # key is a day overview (date)
-            csv += d.isoformat()
+            csv += d.date().isoformat()
             csv += ";"
             csv += str(key["energy"])
             csv += ";"
